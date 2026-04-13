@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VectoresFácil — UNMSM FISI</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════ THEMES ═══════════ */
+:root {
+  --bg:#0a0e1a; --surface:#111827; --surface2:#1a2235; --border:#243050;
+  --accent:#4fffb0; --accent2:#ff6b6b; --accent3:#ffd166; --accent4:#74b9ff; --accent5:#c084fc;
+  --text:#e8edf5; --muted:#7a8baa;
+  --vA:#4fffb0; --vB:#ff6b6b; --vR:#ffd166;
+  --canvas-bg:#0a0e1a; --grid1:#1a2235; --axes:#243050;
+}
+[data-theme="navy"] {
+  --bg:#060c1a; --surface:#0d1526; --surface2:#142035; --border:#1e3055;
+  --accent:#38d9f5; --accent2:#f97316; --accent3:#facc15; --accent4:#818cf8; --accent5:#e879f9;
+  --text:#dde6f5; --muted:#6a7fa0;
+  --vA:#38d9f5; --vB:#f97316; --vR:#facc15;
+  --canvas-bg:#060c1a; --grid1:#142035; --axes:#1e3055;
+}
+[data-theme="forest"] {
+  --bg:#071410; --surface:#0d2018; --surface2:#112a1f; --border:#1c4030;
+  --accent:#4ade80; --accent2:#fb923c; --accent3:#fde047; --accent4:#67e8f9; --accent5:#d946ef;
+  --text:#e2f0e8; --muted:#5a8a70;
+  --vA:#4ade80; --vB:#fb923c; --vR:#fde047;
+  --canvas-bg:#071410; --grid1:#112a1f; --axes:#1c4030;
+}
+[data-theme="light"] {
+  --bg:#f0f4f8; --surface:#ffffff; --surface2:#e8edf5; --border:#cbd5e1;
+  --accent:#0ea5e9; --accent2:#ef4444; --accent3:#f59e0b; --accent4:#6366f1; --accent5:#a855f7;
+  --text:#1e293b; --muted:#64748b;
+  --vA:#0ea5e9; --vB:#ef4444; --vR:#f59e0b;
+  --canvas-bg:#f8fafc; --grid1:#e2e8f0; --axes:#94a3b8;
+}
+[data-theme="crimson"] {
+  --bg:#110308; --surface:#1c0510; --surface2:#260816; --border:#3d1020;
+  --accent:#f43f5e; --accent2:#fb923c; --accent3:#fbbf24; --accent4:#38bdf8; --accent5:#c084fc;
+  --text:#ffe4e8; --muted:#9c5068;
+  --vA:#f43f5e; --vB:#fb923c; --vR:#fbbf24;
+  --canvas-bg:#110308; --grid1:#260816; --axes:#3d1020;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;transition:background .3s,color .3s;}
+
+/* ═══════════ HEADER ═══════════ */
+header{height:54px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;transition:background .3s,border-color .3s;}
+
+.logo-wrap{display:flex;align-items:center;gap:9px;flex-shrink:0;}
+/* UNMSM SVG shield inline logo */
+.unmsm-logo{width:32px;height:32px;flex-shrink:0;}
+.logo{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;color:var(--accent);white-space:nowrap;letter-spacing:-.3px;}
+.logo span{color:var(--muted);font-weight:400;font-size:12px;}
+.fisi-tag{font-family:'Space Mono',monospace;font-size:8px;background:rgba(116,185,255,.12);color:var(--accent4);border:1px solid var(--accent4);border-radius:3px;padding:1px 5px;white-space:nowrap;}
+
+.nav-pills{display:flex;gap:3px;flex:1;overflow-x:auto;scrollbar-width:none;}
+.nav-pills::-webkit-scrollbar{display:none;}
+.pill{font-family:'Space Mono',monospace;font-size:9px;padding:4px 9px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:4px;}
+.pill:hover{border-color:var(--accent);color:var(--accent);}
+.pill.active{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:700;}
+.pill.done .ck{opacity:1!important;}
+.pill .ck{opacity:0;font-size:9px;}
+.pill.active .ck{color:var(--bg);}
+
+.header-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.mode-wrap{display:flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:9px;}
+.sw{width:36px;height:18px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;cursor:pointer;position:relative;transition:background .2s;}
+.sw.on{background:var(--accent3);border-color:var(--accent3);}
+.sw-k{width:12px;height:12px;background:var(--muted);border-radius:50%;position:absolute;top:2px;left:2px;transition:all .2s;}
+.sw.on .sw-k{left:20px;background:var(--bg);}
+
+/* Theme button */
+.theme-btn{font-family:'Space Mono',monospace;font-size:9px;padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;transition:all .15s;position:relative;}
+.theme-btn:hover{border-color:var(--accent5);color:var(--accent5);}
+.theme-panel{display:none;position:absolute;top:58px;right:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;z-index:200;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,.4);}
+.theme-panel.open{display:block;}
+.theme-panel-title{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.theme-swatches{display:flex;flex-direction:column;gap:5px;}
+.swatch{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:5px;border:1px solid var(--border);cursor:pointer;transition:all .15s;}
+.swatch:hover,.swatch.active{border-color:var(--accent);background:rgba(255,255,255,.04);}
+.swatch-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.swatch-name{font-family:'Space Mono',monospace;font-size:10px;color:var(--text);}
+
+/* ═══════════ LAYOUT ═══════════ */
+.main{display:flex;flex:1;overflow:hidden;position:relative;}
+
+/* ═══════════ SIDEBAR ═══════════ */
+.sidebar{width:234px;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;scrollbar-width:thin;scrollbar-color:var(--border) transparent;transition:background .3s,border-color .3s;}
+.ss{padding:13px;border-bottom:1px solid var(--border);}
+.slabel{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:7px;}
+.ctitle{font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;color:var(--accent);line-height:1.2;margin-bottom:6px;}
+.hook{font-size:11px;color:var(--muted);line-height:1.5;padding:7px 9px;border-left:2px solid var(--accent4);background:rgba(116,185,255,.05);border-radius:0 4px 4px 0;margin-bottom:8px;}
+.hook strong{color:var(--accent4);}
+.th h4{font-size:10px;font-weight:600;color:var(--text);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px;}
+.th p{font-size:11px;color:var(--muted);line-height:1.6;}
+.fbox{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin:6px 0;font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);text-align:center;line-height:1.7;word-break:break-word;}
+.fbox .sub{color:var(--muted);font-size:9px;display:block;margin-top:3px;}
+
+/* ═══════════ CANVAS ═══════════ */
+.canvas-area{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.ctoolbar{height:40px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 10px;gap:5px;flex-shrink:0;}
+.tlabel{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;}
+.vbadge{display:flex;align-items:center;gap:4px;padding:3px 7px;border-radius:4px;font-family:'Space Mono',monospace;font-size:9px;border:1px solid;}
+.vbadge.a{border-color:var(--vA);color:var(--vA);background:rgba(79,255,176,.06);}
+.vbadge.b{border-color:var(--vB);color:var(--vB);background:rgba(255,107,107,.06);}
+.vbadge.r{border-color:var(--vR);color:var(--vR);background:rgba(255,209,102,.06);}
+.bdot{width:6px;height:6px;border-radius:50%;}
+.sp{flex:1;}
+.btn{font-family:'Space Mono',monospace;font-size:9px;padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;transition:all .15s;}
+.btn:hover{border-color:var(--accent);color:var(--accent);}
+.btn.pri{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:700;}
+.btn.pri:hover{opacity:.85;}
+canvas#cv{display:block;cursor:crosshair;}
+.hint{font-size:10px;color:var(--muted);text-align:center;padding:4px;font-style:italic;flex-shrink:0;}
+
+/* ═══════════ RIGHT PANEL ═══════════ */
+.rp{width:268px;background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;flex-shrink:0;scrollbar-width:thin;scrollbar-color:var(--border) transparent;transition:background .3s;}
+.tab-bar{display:flex;border-bottom:1px solid var(--border);}
+.tab{flex:1;padding:9px 4px;text-align:center;font-family:'Space Mono',monospace;font-size:9px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tc{display:none;}.tc.active{display:block;}
+.ps{padding:11px 13px;border-bottom:1px solid var(--border);}
+.pst{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:9px;}
+
+/* Controls */
+.vch{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.vcdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.vcn{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;}
+.vcc{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-left:auto;}
+.sr{display:flex;align-items:center;gap:5px;margin-bottom:3px;}
+.sr label{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);width:11px;}
+.sr input[type=range]{flex:1;height:3px;accent-color:var(--accent);cursor:pointer;}
+.sv{font-family:'Space Mono',monospace;font-size:9px;width:30px;text-align:right;color:var(--text);}
+.ig{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px;}
+.ic{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:6px 8px;}
+.icl{font-family:'Space Mono',monospace;font-size:8px;color:var(--muted);margin-bottom:2px;}
+.icv{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;}
+
+/* Steps */
+.sb{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:8px 10px;margin-bottom:6px;}
+.sbn{font-family:'Space Mono',monospace;font-size:8px;color:var(--muted);margin-bottom:3px;letter-spacing:.5px;}
+.sbt{font-size:11px;color:var(--text);line-height:1.5;}
+.sbf{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-top:4px;word-break:break-all;}
+.sbr{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent3);font-weight:700;margin-top:3px;}
+
+/* Exercises */
+.ec{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:10px;margin-bottom:8px;transition:border-color .2s;}
+.ec.ok{border-color:var(--accent);}
+.ec.err{border-color:var(--accent2);}
+.en{font-family:'Space Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.5px;margin-bottom:5px;}
+.eq{font-size:12px;color:var(--text);line-height:1.5;margin-bottom:8px;}
+.echs{display:flex;flex-direction:column;gap:4px;}
+.cb{font-family:'Space Mono',monospace;font-size:9px;padding:6px 8px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;text-align:left;transition:all .15s;line-height:1.4;}
+.cb:hover:not(:disabled){border-color:var(--accent4);color:var(--accent4);}
+.cb.ok{background:rgba(79,255,176,.1);border-color:var(--accent);color:var(--accent);}
+.cb.err{background:rgba(255,107,107,.1);border-color:var(--accent2);color:var(--accent2);}
+.ef{margin-top:6px;font-size:11px;line-height:1.5;padding:6px 9px;border-radius:4px;display:none;}
+.ef.show{display:block;}
+.ef.ok{background:rgba(79,255,176,.08);color:var(--accent);border-left:2px solid var(--accent);}
+.ef.err{background:rgba(255,107,107,.08);color:var(--accent2);border-left:2px solid var(--accent2);}
+.nir{display:flex;gap:5px;align-items:center;}
+.ni{font-family:'Space Mono',monospace;font-size:12px;padding:5px 8px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text);width:80px;outline:none;}
+.ni:focus{border-color:var(--accent4);}
+.pbr{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:5px;}
+.pf{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent4));border-radius:2px;transition:width .5s ease;}
+
+/* ═══════════ FOOTER BADGE ═══════════ */
+.footer-badge{
+  position:fixed;bottom:16px;right:16px;
+  background:linear-gradient(135deg,#1a0a2e 0%,#0f1a35 100%);
+  border:1px solid;
+  border-image:linear-gradient(135deg,var(--accent5),var(--accent3),var(--accent)) 1;
+  border-radius:10px;
+  padding:8px 13px;
+  z-index:300;
+  text-align:right;
+  pointer-events:none;
+  box-shadow:0 4px 20px rgba(0,0,0,.5), 0 0 20px rgba(192,132,252,.15);
+}
+[data-theme="light"] .footer-badge{background:linear-gradient(135deg,#f0e6ff 0%,#e0eeff 100%);}
+.footer-line1{
+  font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;
+  background:linear-gradient(90deg,var(--accent5),var(--accent3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  white-space:nowrap;
+}
+.footer-line2{
+  font-family:'Space Mono',monospace;font-size:9px;
+  color:var(--accent4);letter-spacing:.5px;margin-top:2px;
+}
+.footer-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--accent);margin:0 3px;vertical-align:middle;}
+</style>
+</head>
+<body data-theme="dark">
+
+<!-- HEADER -->
+<header>
+  <div class="logo-wrap">
+    <!-- UNMSM Shield SVG -->
+    <svg class="unmsm-logo" viewBox="0 0 100 120" fill="none" xmlns="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxf49uTNFrTn-j01GqhHYJBd0XIc5IgNKAtg&s">
+      <path d="M50 2 L95 20 L95 70 Q95 105 50 118 Q5 105 5 70 L5 20 Z" fill="#8B0000" stroke="#ffd700" stroke-width="3"/>
+      <path d="M50 10 L88 25 L88 68 Q88 99 50 111 Q12 99 12 68 L12 25 Z" fill="#6B0000"/>
+      <!-- Book symbol -->
+      <rect x="28" y="45" width="44" height="30" rx="3" fill="#ffd700" opacity=".9"/>
+      <rect x="30" y="47" width="19" height="26" rx="2" fill="#8B0000"/>
+      <rect x="51" y="47" width="19" height="26" rx="2" fill="#8B0000"/>
+      <line x1="50" y1="47" x2="50" y2="73" stroke="#ffd700" stroke-width="1.5"/>
+      <!-- Torch top -->
+      <rect x="46" y="28" width="8" height="16" rx="2" fill="#ffd700"/>
+      <ellipse cx="50" cy="26" rx="7" ry="5" fill="#ffa500"/>
+      <ellipse cx="50" cy="24" rx="4" ry="6" fill="#ffdd00" opacity=".8"/>
+      <!-- Stars -->
+      <text x="50" y="94" font-size="8" fill="#ffd700" text-anchor="middle" font-family="sans-serif">UNMSM</text>
+    </svg>
+    <div>
+      <div class="logo">VectoresFácil <span>— FISI</span></div>
+      <div class="fisi-tag">Ing. Sistemas e Informática · 2026</div>
+    </div>
+  </div>
+
+  <nav class="nav-pills" id="nav"></nav>
+
+  <div class="header-right">
+    <div class="mode-wrap">
+      <span id="ml0" style="color:var(--accent4);font-family:'Space Mono',monospace;font-size:9px;">STU</span>
+      <div class="sw" id="msw" onclick="toggleMode()"><div class="sw-k"></div></div>
+      <span id="ml1" style="color:var(--muted);font-family:'Space Mono',monospace;font-size:9px;">PROF</span>
+    </div>
+    <button class="theme-btn" onclick="toggleThemePanel()">🎨 Tema</button>
+  </div>
+</header>
+
+<!-- THEME PANEL -->
+<div class="theme-panel" id="themePanel">
+  <div class="theme-panel-title">Elige tu tema de color</div>
+  <div class="theme-swatches">
+    <div class="swatch active" onclick="setTheme('dark')" data-t="dark">
+      <div class="swatch-dot" style="background:#4fffb0"></div>
+      <span class="swatch-name">🌙 Dark (defecto)</span>
+    </div>
+    <div class="swatch" onclick="setTheme('navy')" data-t="navy">
+      <div class="swatch-dot" style="background:#38d9f5"></div>
+      <span class="swatch-name">🔵 Navy Azul</span>
+    </div>
+    <div class="swatch" onclick="setTheme('forest')" data-t="forest">
+      <div class="swatch-dot" style="background:#4ade80"></div>
+      <span class="swatch-name">🌿 Forest Verde</span>
+    </div>
+    <div class="swatch" onclick="setTheme('light')" data-t="light">
+      <div class="swatch-dot" style="background:#0ea5e9"></div>
+      <span class="swatch-name">☀️ Light Claro</span>
+    </div>
+    <div class="swatch" onclick="setTheme('crimson')" data-t="crimson">
+      <div class="swatch-dot" style="background:#f43f5e"></div>
+      <span class="swatch-name">🔴 Crimson Rojo</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="canvas-area">
+    <div class="ctoolbar">
+      <span class="tlabel">CANVAS 2D</span>
+      <div class="vbadge a"><div class="bdot" style="background:var(--vA)"></div><span id="badgeA">v=(3,2)</span></div>
+      <div class="vbadge b"><div class="bdot" style="background:var(--vB)"></div><span id="badgeB">u=(-2,3)</span></div>
+      <div class="vbadge r" id="badgeR" style="display:none"><div class="bdot" style="background:var(--vR)"></div><span id="badgeRt">r=(1,5)</span></div>
+      <div class="sp"></div>
+      <button class="btn" onclick="resetV()">↺ Reset</button>
+      <button class="btn" onclick="toggleGrid()"># Grid</button>
+      <button class="btn pri" id="abtn" onclick="doAnimate()">▶ Animar</button>
+    </div>
+    <canvas id="cv"></canvas>
+    <div class="hint" id="hint">🖱 Arrastra los extremos de los vectores · Rueda = zoom</div>
+  </div>
+  <aside class="rp">
+    <div class="tab-bar">
+      <div class="tab active" onclick="swTab('ctrl')">Controles</div>
+      <div class="tab" onclick="swTab('paso')">Paso a paso</div>
+      <div class="tab" onclick="swTab('ej')">Ejercicios</div>
+    </div>
+    <div class="tc active" id="tc-ctrl"></div>
+    <div class="tc" id="tc-paso"></div>
+    <div class="tc" id="tc-ej"></div>
+  </aside>
+</div>
+
+<!-- FOOTER BADGE -->
+<div class="footer-badge">
+  <div class="footer-line1">De estudiantes para estudiantes</div>
+  <div class="footer-line2">2026 <span class="footer-dot"></span> FISI <span class="footer-dot"></span> San Marcos</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  THEME
+// ═══════════════════════════════════════════════════
+let currentTheme = 'dark';
+function setTheme(t){
+  currentTheme=t;
+  document.body.setAttribute('data-theme',t==='dark'?'dark':t);
+  document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('active',s.dataset.t===t));
+  document.getElementById('themePanel').classList.remove('open');
+  // Update canvas bg color
+  draw();
+}
+function toggleThemePanel(){
+  document.getElementById('themePanel').classList.toggle('open');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.theme-btn')&&!e.target.closest('.theme-panel'))
+    document.getElementById('themePanel').classList.remove('open');
+});
+
+function getThemeColors(){
+  const s=getComputedStyle(document.body);
+  return {
+    bg: s.getPropertyValue('--canvas-bg').trim()||'#0a0e1a',
+    grid: s.getPropertyValue('--grid1').trim()||'#1a2235',
+    axes: s.getPropertyValue('--axes').trim()||'#243050',
+    vA: s.getPropertyValue('--vA').trim()||'#4fffb0',
+    vB: s.getPropertyValue('--vB').trim()||'#ff6b6b',
+    vR: s.getPropertyValue('--vR').trim()||'#ffd166',
+    text: s.getPropertyValue('--text').trim()||'#e8edf5',
+    muted: s.getPropertyValue('--muted').trim()||'#7a8baa',
+    accent: s.getPropertyValue('--accent').trim()||'#4fffb0',
+    accent3: s.getPropertyValue('--accent3').trim()||'#ffd166',
+    accent4: s.getPropertyValue('--accent4').trim()||'#74b9ff',
+    accent5: s.getPropertyValue('--accent5').trim()||'#c084fc',
+  };
+}
+
+// ═══════════════════════════════════════════════════
+//  MODULES
+// ═══════════════════════════════════════════════════
+const MODULES = [
+  {
+    id:0, name:'1. Definicion',
+    title:'Vectores en R2',
+    hook:'<strong>Por que CS?</strong> Los motores de videojuegos y redes neuronales usan vectores para posicion, velocidad y pesos sinapticos.',
+    theory:[
+      {h:'Que es un vector?',p:'Un vector tiene magnitud y direccion. En R2 se describe con dos componentes (vx, vy).'},
+      {h:'Notacion',p:'Se escribe en negrita v o con flecha. Sus componentes son escalares reales.'}
+    ],
+    formulas:['v = (vx, vy)','v = vx*i + vy*j'],
+    formulasSub:['componente x · componente y','i=(1,0), j=(0,1) : vectores base'],
+    showScalar:false, drawFn:'def2d',
+    steps(s){
+      const m=mag(s.ax,s.ay),a=ang(s.ax,s.ay),n=nrm(s.ax,s.ay);
+      return [
+        {n:'PASO 1 — COMPONENTES',t:'El vector v tiene:',f:`v = (${s.ax.toFixed(1)}) * i + (${s.ay.toFixed(1)}) * j`},
+        {n:'PASO 2 — MAGNITUD',t:'Teorema de Pitagoras:',f:`|v| = sqrt(${s.ax.toFixed(1)}^2 + ${s.ay.toFixed(1)}^2)`,r:`= ${m.toFixed(2)}`},
+        {n:'PASO 3 — ANGULO',t:'Respecto al eje X+:',f:`theta = atan2(${s.ay.toFixed(1)}, ${s.ax.toFixed(1)})`,r:`= ${a.toFixed(1)} grados`},
+        {n:'PASO 4 — NORMALIZACION',t:'Vector unitario:',f:`v_hat = v / |v|`,r:`= (${n.x.toFixed(2)}, ${n.y.toFixed(2)})  |v_hat|=1`}
+      ];
+    },
+    exercises:[
+      {q:'Si v=(4,-3), cual es su componente Y?',
+       opts:['A) 4','B) -3','C) 5','D) 1'], ans:'B',
+       fb:{A:'No. vx=4 es la componente X.',B:'Correcto! vy=-3 es la componente Y. El negativo indica direccion hacia abajo.',C:'5 = |v|, no la componente Y.',D:'4+(-3)=1, eso no es una componente.'}},
+      {q:'Magnitud de v=(3,4):', num:true, ans:5, tol:0.1, fb:'Correcto! |v|=sqrt(9+16)=sqrt(25)=5. La terna (3,4,5) es pitagorica.', fbErr:'Recuerda: |v|=sqrt(vx^2+vy^2)=sqrt(9+16)=?'},
+      {q:'Que afirmacion sobre el vector nulo (0,0) es correcta?',
+       opts:['A) Su magnitud es 1','B) Tiene direccion 0° y magnitud 1','C) Su magnitud es 0 y su direccion es indefinida','D) Es igual al vector (1,1)'], ans:'C',
+       fb:{A:'|0|=sqrt(0+0)=0, no 1.',B:'La magnitud es 0, no 1.',C:'Correcto! Magnitud 0 y direccion matematicamente indefinida.',D:'(0,0) no es igual a (1,1).'}}
+    ]
+  },
+  {
+    id:1, name:'2. Suma & Resta',
+    title:'Operaciones basicas',
+    hook:'<strong>Por que CS?</strong> En simulaciones fisicas, sumar vectores calcula la fuerza neta sobre un objeto: peso + normal + friccion.',
+    theory:[
+      {h:'Suma de vectores',p:'Se suman componente a componente. Geometricamente: coloca u al final de v (regla del triangulo).'},
+      {h:'Resta de vectores',p:'v - u = v + (-u). La resta da el vector que va de u hacia v.'}
+    ],
+    formulas:['v + u = (vx+ux, vy+uy)','v - u = (vx-ux, vy-uy)'],
+    formulasSub:['Componente a componente','Equivale a sumar -u'],
+    showScalar:false, drawFn:'suma',
+    steps(s){
+      const rx=s.ax+s.bx,ry=s.ay+s.by,rx2=s.ax-s.bx,ry2=s.ay-s.by;
+      return [
+        {n:'PASO 1 — SUMA',t:'Sumamos componente a componente:',f:`(${s.ax.toFixed(1)}+${s.bx.toFixed(1)}, ${s.ay.toFixed(1)}+${s.by.toFixed(1)})`,r:`v+u = (${rx.toFixed(1)}, ${ry.toFixed(1)})`},
+        {n:'PASO 2 — RESTA',t:'Restamos componente a componente:',f:`(${s.ax.toFixed(1)}-${s.bx.toFixed(1)}, ${s.ay.toFixed(1)}-${s.by.toFixed(1)})`,r:`v-u = (${rx2.toFixed(1)}, ${ry2.toFixed(1)})`},
+        {n:'PASO 3 — MAGNITUD SUMA',t:'Magnitud del vector suma:',f:`|r| = sqrt(${rx.toFixed(1)}^2 + ${ry.toFixed(1)}^2)`,r:`= ${mag(rx,ry).toFixed(2)}`},
+        {n:'PASO 4 — PROPIEDAD',t:'La suma vectorial es conmutativa:',f:'v + u = u + v   (siempre)'}
+      ];
+    },
+    exercises:[
+      {q:'v=(2,3) y u=(-1,4). Cuanto vale v+u?',
+       opts:['A) (1,7)','B) (3,-1)','C) (2,12)','D) (-2,12)'], ans:'A',
+       fb:{A:'Correcto! (2+(-1), 3+4)=(1,7). Se suma componente a componente.',B:'Restaste vy en vez de sumarlo.',C:'Multiplicaste en vez de sumar.',D:'Signo incorrecto en x.'}},
+      {q:'v=(5,2), u=(3,2). Magnitud de v-u:', num:true, ans:2, tol:0.15, fb:'Correcto! v-u=(2,0), |r|=sqrt(4+0)=2.', fbErr:'Primero resta: (5-3, 2-2)=(2,0). Luego magnitud=?'},
+      {q:'Cual propiedad NO cumple la suma de vectores?',
+       opts:['A) Conmutativa: v+u=u+v','B) Asociativa: (v+u)+w=v+(u+w)','C) Distributiva de escalares: k(v+u)=kv+ku','D) La suma siempre tiene mayor magnitud que sus sumandos'], ans:'D',
+       fb:{A:'Si cumple. La suma vectorial es conmutativa.',B:'Si cumple. La suma vectorial es asociativa.',C:'Si cumple: k(v+u)=kv+ku.',D:'Correcto! Si los vectores apuntan en sentidos opuestos, |v+u| puede ser MENOR que |v| o |u|.'}}
+    ]
+  },
+  {
+    id:2, name:'3. Magnitud',
+    title:'Magnitud & Normalizacion',
+    hook:'<strong>Por que CS?</strong> En shaders 3D, normalizar el vector normal de superficie es imprescindible para calcular iluminacion correctamente.',
+    theory:[
+      {h:'Magnitud (norma)',p:'La longitud del vector. Siempre mayor o igual a 0. Se calcula con el Teorema de Pitagoras generalizado.'},
+      {h:'Vector unitario',p:'v_hat = v/|v|. Tiene magnitud exactamente 1. Representa direccion pura, sin escala.'}
+    ],
+    formulas:['|v| = sqrt(vx^2 + vy^2)','v_hat = v / |v|'],
+    formulasSub:['Norma euclidiana en R2','|v_hat| = 1 siempre'],
+    showScalar:false, drawFn:'mag',
+    steps(s){
+      const m=mag(s.ax,s.ay),n=nrm(s.ax,s.ay);
+      return [
+        {n:'PASO 1 — CUADRADOS',t:'Elevamos al cuadrado cada componente:',f:`vx^2=${(s.ax*s.ax).toFixed(2)}  vy^2=${(s.ay*s.ay).toFixed(2)}`},
+        {n:'PASO 2 — SUMA',t:'Sumamos los cuadrados:',f:`vx^2+vy^2=${(s.ax*s.ax+s.ay*s.ay).toFixed(2)}`},
+        {n:'PASO 3 — RAIZ',t:'Aplicamos raiz cuadrada:',f:`|v|=sqrt(${(s.ax*s.ax+s.ay*s.ay).toFixed(2)})`,r:`= ${m.toFixed(4)}`},
+        {n:'PASO 4 — NORMALIZAR',t:'Dividimos por |v|:',f:`v_hat=(${s.ax.toFixed(1)}/${m.toFixed(2)}, ${s.ay.toFixed(1)}/${m.toFixed(2)})`,r:`= (${n.x.toFixed(3)}, ${n.y.toFixed(3)})`}
+      ];
+    },
+    exercises:[
+      {q:'|v| con v=(0,5):', num:true, ans:5, tol:0.1, fb:'Correcto! |v|=sqrt(0+25)=5. Vector puramente vertical.', fbErr:'|v|=sqrt(vx^2+vy^2)=sqrt(0+25)=?'},
+      {q:'El vector unitario de v=(1,0) es:',
+       opts:['A) (1,0)','B) (0,1)','C) (0.5,0.5)','D) (sqrt2,sqrt2)'], ans:'A',
+       fb:{A:'Correcto! |v|=1, asi que v_hat=v=(1,0). i ya es unitario.',B:'(0,1)=j, distinto vector.',C:'|(0.5,0.5)|=sqrt(0.5) no es 1.',D:'|(sqrt2,sqrt2)|=2, no es 1.'}},
+      {q:'Si escalas v por k>0, que le pasa al vector unitario v_hat?',
+       opts:['A) Se multiplica por k','B) Se divide por k','C) No cambia','D) Siempre vale (1,1)'], ans:'C',
+       fb:{A:'kv/|kv|=kv/(k|v|)=v/|v|=v_hat. La k se cancela.',B:'Igual: la k se cancela en numerador y denominador.',C:'Correcto! La direccion no cambia al escalar. v_hat solo depende de la direccion.',D:'(1,1) no es unitario: |(1,1)|=sqrt(2) no es 1.'}}
+    ]
+  },
+  {
+    id:3, name:'4. Dot Product',
+    title:'Producto Punto',
+    hook:'<strong>Por que CS?</strong> El dot product determina si dos superficies "se ven", calcula la iluminacion difusa (Ley de Lambert) y detecta colisiones.',
+    theory:[
+      {h:'Definicion algebraica',p:'Multiplica componentes correspondientes y suma. El resultado es un ESCALAR.'},
+      {h:'Definicion geometrica',p:'v·u = |v||u|cos(theta). Si el dot product es 0, los vectores son perpendiculares.'}
+    ],
+    formulas:['v·u = vx*ux + vy*uy','v·u = |v||u| * cos(theta)'],
+    formulasSub:['Resultado siempre escalar','theta = angulo entre vectores'],
+    showScalar:true, scalarName:'v · u',
+    drawFn:'dot',
+    steps(s){
+      const dp=s.ax*s.bx+s.ay*s.by,mA=mag(s.ax,s.ay),mB=mag(s.bx,s.by);
+      const cosT=dp/((mA*mB)||1),theta=(Math.acos(Math.max(-1,Math.min(1,cosT)))*180/Math.PI);
+      return [
+        {n:'PASO 1 — MULTIPLICAR',t:'Multiplicamos componentes:',f:`(${s.ax.toFixed(1)} x ${s.bx.toFixed(1)}) + (${s.ay.toFixed(1)} x ${s.by.toFixed(1)})`},
+        {n:'PASO 2 — SUMAR',t:'Sumamos los productos:',f:`${(s.ax*s.bx).toFixed(2)} + ${(s.ay*s.by).toFixed(2)}`,r:`v·u = ${dp.toFixed(2)}`},
+        {n:'PASO 3 — ANGULO',t:'Despejamos theta:',f:`cos(t) = ${dp.toFixed(2)} / (${mA.toFixed(2)} x ${mB.toFixed(2)})`,r:`theta = ${theta.toFixed(1)} grados`},
+        {n:'PASO 4 — INTERPRETACION',t:(Math.abs(dp)<0.01?'Perpendiculares (dot=0)':dp>0?'Angulo agudo (dot>0)':'Angulo obtuso (dot<0)'),f:'Signo del dot product indica angulo relativo'}
+      ];
+    },
+    exercises:[
+      {q:'v=(1,0) y u=(0,1). Cuanto vale v·u?',
+       opts:['A) 1','B) 0','C) -1','D) sqrt(2)'], ans:'B',
+       fb:{A:'1x0+0x1=0, no 1.',B:'Correcto! (1x0)+(0x1)=0. Son perpendiculares (i y j son base ortogonal).',C:'Eso ocurre cuando son antiparalelos.',D:'sqrt(2) es la distancia entre puntas, no el dot product.'}},
+      {q:'v=(2,2), u=(-2,-2). Dot product:', num:true, ans:-8, tol:0.1, fb:'Correcto! (2x-2)+(2x-2)=-4+(-4)=-8. Vectores antiparalelos.', fbErr:'(2x-2)+(2x-2)= -4 + (-4) = ?'},
+      {q:'Si v·u > 0, entonces el angulo entre ellos es:',
+       opts:['A) Exactamente 90 grados','B) Entre 90 y 180 grados','C) Entre 0 y 90 grados','D) Siempre 0 grados'], ans:'C',
+       fb:{A:'dot=0 implica theta=90 grados.',B:'dot<0 implica theta entre 90 y 180 grados.',C:'Correcto! dot>0 ssi cos(theta)>0 ssi 0<theta<90.',D:'dot>0 no implica theta=0 grados.'}}
+    ]
+  },
+  {
+    id:4, name:'5. Cross Product',
+    title:'Producto Cruz (2D)',
+    hook:'<strong>Por que CS?</strong> El producto cruz determina orientacion (horario/antihorario) en algoritmos de geometria computacional y motores de fisica.',
+    theory:[
+      {h:'En 2D',p:'El producto cruz de v=(vx,vy) y u=(ux,uy) da un ESCALAR = la componente Z si estuvieran en 3D.'},
+      {h:'Interpretacion',p:'|v x u| = area del paralelogramo formado por ambos vectores. El signo indica orientacion.'}
+    ],
+    formulas:['v x u = vx*uy - vy*ux','|v x u| = |v||u| * sin(theta)'],
+    formulasSub:['Resultado escalar (componente Z)','Area del paralelogramo'],
+    showScalar:true, scalarName:'v x u',
+    drawFn:'cross',
+    steps(s){
+      const cp=s.ax*s.by-s.ay*s.bx,area=Math.abs(cp);
+      return [
+        {n:'PASO 1 — FORMULA',t:'vx*uy - vy*ux:',f:`(${s.ax.toFixed(1)} x ${s.by.toFixed(1)}) - (${s.ay.toFixed(1)} x ${s.bx.toFixed(1)})`},
+        {n:'PASO 2 — RESULTADO',t:'El escalar resultante:',f:`${(s.ax*s.by).toFixed(2)} - ${(s.ay*s.bx).toFixed(2)}`,r:`v x u = ${cp.toFixed(2)}`},
+        {n:'PASO 3 — AREA',t:'Area del paralelogramo:',f:`|v x u| = ${area.toFixed(2)}`,r:`Area del triangulo = ${(area/2).toFixed(2)}`},
+        {n:'PASO 4 — ORIENTACION',t:(cp>0?'Antihorario (CCW)':cp<0?'Horario (CW)':'Vectores paralelos (area=0)'),f:'Signo positivo = giro antihorario'}
+      ];
+    },
+    exercises:[
+      {q:'v=(1,0), u=(0,1). v x u = ?',
+       opts:['A) 0','B) 1','C) -1','D) sqrt(2)'], ans:'B',
+       fb:{A:'vx*uy-vy*ux=1*1-0*0=1, no 0.',B:'Correcto! vx*uy-vy*ux=1*1-0*0=1. Orientacion antihoraria.',C:'Eso seria u x v (orden invertido).',D:'sqrt(2) no resulta del producto cruz aqui.'}},
+      {q:'v=(3,0), u=(0,4). Area del paralelogramo:', num:true, ans:12, tol:0.1, fb:'Correcto! |v x u|=|3*4-0*0|=12. Base x altura.', fbErr:'|v x u|=|vx*uy-vy*ux|=|3*4-0*0|=?'},
+      {q:'Si v x u = 0, que significa?',
+       opts:['A) v y u son perpendiculares','B) v y u son paralelos o uno es el vector nulo','C) |v| = |u|','D) El angulo entre ellos es 90 grados'], ans:'B',
+       fb:{A:'Perpendiculares implica dot=0, no cross=0.',B:'Correcto! sin(theta)=0 implica theta=0 o 180 grados, es decir son paralelos.',C:'Magnitudes iguales no implica cross=0.',D:'theta=90 grados implica cross=|v||u|, que no es 0.'}}
+    ]
+  },
+  {
+    id:5, name:'6. Proyeccion',
+    title:'Proyeccion de Vectores',
+    hook:'<strong>Por que CS?</strong> La proyeccion calcula sombras en ray tracing, descompone fuerzas en fisica, y es la base del algoritmo PCA en machine learning.',
+    theory:[
+      {h:'Proyeccion escalar',p:'La "sombra" de v sobre u. Es un escalar que indica cuanto de v va en la direccion de u.'},
+      {h:'Proyeccion vectorial',p:'El vector en la direccion de u con longitud igual a la proyeccion escalar.'}
+    ],
+    formulas:['proj_scalar = (v·u) / |u|','proj_vec = ((v·u)/|u|^2) * u'],
+    formulasSub:['Escalar: longitud de la sombra','Vector en la direccion de u'],
+    showScalar:true, scalarName:'proj scalar',
+    drawFn:'proj',
+    steps(s){
+      const dp=s.ax*s.bx+s.ay*s.by,mB=mag(s.bx,s.by),mB2=(s.bx*s.bx+s.by*s.by)||1;
+      const ps=dp/(mB||1),pv={x:(dp/mB2)*s.bx,y:(dp/mB2)*s.by};
+      return [
+        {n:'PASO 1 — DOT PRODUCT',t:'Calculamos v·u:',f:`${s.ax.toFixed(1)}x${s.bx.toFixed(1)}+${s.ay.toFixed(1)}x${s.by.toFixed(1)}`,r:`= ${dp.toFixed(2)}`},
+        {n:'PASO 2 — MAGNITUD |u|',t:'Magnitud del vector base:',f:`|u|=sqrt(${s.bx.toFixed(1)}^2+${s.by.toFixed(1)}^2)`,r:`= ${mB.toFixed(2)}`},
+        {n:'PASO 3 — ESCALAR',t:'Proyeccion escalar:',f:`${dp.toFixed(2)} / ${mB.toFixed(2)}`,r:`proj = ${ps.toFixed(2)}`},
+        {n:'PASO 4 — VECTORIAL',t:'Proyeccion vectorial:',f:`(${dp.toFixed(2)}/${mB2.toFixed(2)}) * (${s.bx.toFixed(1)},${s.by.toFixed(1)})`,r:`= (${pv.x.toFixed(2)}, ${pv.y.toFixed(2)})`}
+      ];
+    },
+    exercises:[
+      {q:'Proyeccion escalar de v=(4,0) sobre u=(1,0):', num:true, ans:4, tol:0.1, fb:'Correcto! v·u=4, |u|=1, proj=4/1=4.', fbErr:'proj=(v·u)/|u|=(4x1+0x0)/1=?'},
+      {q:'Si v es perpendicular a u, la proyeccion de v sobre u es:',
+       opts:['A) |v|','B) |u|','C) 0','D) 1'], ans:'C',
+       fb:{A:'Seria el caso si fueran paralelos.',B:'No depende directamente de |u|.',C:'Correcto! v perp u implica v·u=0, entonces proj=0/|u|=0.',D:'No es un valor constante.'}},
+      {q:'La proyeccion vectorial de v sobre u siempre apunta:',
+       opts:['A) En la direccion de v','B) En la direccion de u o de -u','C) Perpendicular a u','D) En la direccion (1,1)'], ans:'B',
+       fb:{A:'No, apunta en la direccion de u.',B:'Correcto! proj_vec = escalar x u_hat. Si escalar<0, apunta en -u.',C:'El componente perpendicular es v - proj_vec.',D:'Depende de la direccion de u, no es fijo.'}}
+    ]
+  },
+  {
+    id:6, name:'7. Angulo',
+    title:'Angulo entre Vectores',
+    hook:'<strong>Por que CS?</strong> Calcular angulos entre vectores es clave en vision por computadora, robotica y NLP (cosine similarity en embeddings).',
+    theory:[
+      {h:'Formula del angulo',p:'Despejamos theta del dot product geometrico. El resultado esta siempre en [0, 180] grados.'},
+      {h:'Cosine similarity',p:'cos(theta) mide similitud entre vectores. Se usa en ML para comparar embeddings de texto o imagenes.'}
+    ],
+    formulas:['cos(theta) = (v·u) / (|v|*|u|)','theta = arccos((v·u) / (|v|*|u|))'],
+    formulasSub:['Cosine similarity: valor en [-1, 1]','Angulo resultante en [0, 180] grados'],
+    showScalar:true, scalarName:'theta (grados)',
+    drawFn:'angle',
+    steps(s){
+      const dp=s.ax*s.bx+s.ay*s.by,mA=mag(s.ax,s.ay),mB=mag(s.bx,s.by);
+      const cosT=dp/((mA*mB)||1),theta=Math.acos(Math.max(-1,Math.min(1,cosT)))*180/Math.PI;
+      return [
+        {n:'PASO 1 — DOT PRODUCT',t:'v·u:',f:`${(s.ax*s.bx).toFixed(2)}+${(s.ay*s.by).toFixed(2)}`,r:`= ${dp.toFixed(2)}`},
+        {n:'PASO 2 — MAGNITUDES',t:'|v| x |u|:',f:`${mA.toFixed(2)} x ${mB.toFixed(2)}`,r:`= ${(mA*mB).toFixed(2)}`},
+        {n:'PASO 3 — COSENO',t:'cos(theta) = dot / (|v|*|u|):',f:`${dp.toFixed(2)} / ${(mA*mB).toFixed(2)}`,r:`cos(theta) = ${cosT.toFixed(4)}`},
+        {n:'PASO 4 — ANGULO',t:'theta = arccos(cos(theta)):',f:`arccos(${cosT.toFixed(4)})`,r:`theta = ${theta.toFixed(2)} grados`}
+      ];
+    },
+    exercises:[
+      {q:'Angulo entre v=(1,0) y u=(0,1):', num:true, ans:90, tol:0.5, fb:'Correcto! Los vectores i y j son perpendiculares: 90 grados.', fbErr:'cos(t)=v·u/(|v||u|)=0/1=0, entonces theta=arccos(0)=?'},
+      {q:'Si cos(theta)=1, que significa?',
+       opts:['A) Vectores perpendiculares','B) Vectores paralelos con mismo sentido','C) Vectores antiparalelos','D) Un vector es nulo'], ans:'B',
+       fb:{A:'cos(90)=0, no 1.',B:'Correcto! cos(0)=1, entonces theta=0, misma direccion.',C:'cos(180)=-1.',D:'No aplica directamente.'}},
+      {q:'Cosine similarity en ML se usa para:',
+       opts:['A) Calcular gradientes en backprop','B) Medir similitud entre embeddings de texto','C) Regularizacion L2','D) Inicializar pesos de la red'], ans:'B',
+       fb:{A:'Los gradientes usan derivadas parciales, no angulos.',B:'Correcto! cos(theta) en [-1,1] mide similitud: 1=identicos, 0=ortogonales, -1=opuestos.',C:'L2 usa la norma (magnitud), no el angulo.',D:'Los pesos se inicializan con otras tecnicas como Xavier o He.'}}
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+const S={
+  mod:0, ax:3, ay:2, bx:-2, by:3,
+  zoom:40, ox:0, oy:0,
+  drag:null, grid:true, mode:'student', animating:false,
+  visited:new Set([0]),
+  exDone:MODULES.map(()=>[false,false,false]),
+  exScore:MODULES.map(()=>0),
+  tab:'ctrl'
+};
+
+// ═══════════════════════════════════════════════════
+//  CANVAS
+// ═══════════════════════════════════════════════════
+const cv=document.getElementById('cv');
+const ctx=cv.getContext('2d');
+
+function resize(){
+  const a=cv.parentElement;
+  cv.width=a.clientWidth;
+  cv.height=a.clientHeight-40-24;
+  S.ox=cv.width/2; S.oy=cv.height/2;
+  draw();
+}
+window.addEventListener('resize',resize);
+
+function tc(wx,wy){return{x:S.ox+wx*S.zoom,y:S.oy-wy*S.zoom};}
+function tw(cx,cy){return{x:(cx-S.ox)/S.zoom,y:-(cy-S.oy)/S.zoom};}
+function mag(x,y){return Math.sqrt(x*x+y*y);}
+function ang(x,y){return Math.atan2(y,x)*180/Math.PI;}
+function nrm(x,y){const m=mag(x,y)||1;return{x:x/m,y:y/m};}
+function dotP(ax,ay,bx,by){return ax*bx+ay*by;}
+
+function draw(){
+  const C=getThemeColors();
+  const W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=C.bg; ctx.fillRect(0,0,W,H);
+  if(S.grid) drawGrid(C);
+  drawAxes(C);
+  const m=MODULES[S.mod];
+  if(m.drawFn==='suma') drawSuma(C);
+  else if(m.drawFn==='dot') drawDot(C);
+  else if(m.drawFn==='cross') drawCross(C);
+  else if(m.drawFn==='proj') drawProj(C);
+  else if(m.drawFn==='angle') drawAngle(C);
+  else if(m.drawFn==='mag') drawMag(C);
+  else drawDef2d(C);
+  drawEndpoints(C);
+}
+
+function drawGrid(C){
+  const W=cv.width,H=cv.height,z=S.zoom;
+  const ox=S.ox%z,oy=S.oy%z;
+  ctx.strokeStyle=C.grid; ctx.lineWidth=1;
+  for(let x=ox;x<W;x+=z){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=oy;y<H;y+=z){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+}
+
+function drawAxes(C){
+  const W=cv.width,H=cv.height,ox=S.ox,oy=S.oy;
+  ctx.strokeStyle=C.axes; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(0,oy);ctx.lineTo(W,oy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox,0);ctx.lineTo(ox,H);ctx.stroke();
+  ctx.fillStyle=C.muted; ctx.font='9px Space Mono,monospace'; ctx.textAlign='center';
+  const r=Math.ceil(W/S.zoom/2)+1;
+  for(let i=-r;i<=r;i++){
+    if(!i)continue;
+    const cx=S.ox+i*S.zoom,cy=S.oy-i*S.zoom;
+    ctx.strokeStyle=C.muted; ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(cx,oy-3);ctx.lineTo(cx,oy+3);ctx.stroke();
+    ctx.fillStyle=C.muted; ctx.fillText(i,cx,oy+13);
+    if(Math.abs(i)<=Math.ceil(H/S.zoom/2)){
+      ctx.beginPath();ctx.moveTo(ox-3,cy);ctx.lineTo(ox+3,cy);ctx.stroke();
+      ctx.textAlign='right';ctx.fillText(i,ox-6,cy+3);ctx.textAlign='center';
+    }
+  }
+  ctx.fillStyle=C.axes; ctx.font='bold 11px Space Mono,monospace';
+  ctx.fillText('x',W-10,oy-8); ctx.fillText('y',ox+8,10); ctx.fillText('O',ox-8,oy+12);
+}
+
+function arrow(x1,y1,x2,y2,color,w=2.5,hs=10){
+  const a=Math.atan2(y2-y1,x2-x1),L=Math.sqrt((x2-x1)**2+(y2-y1)**2);
+  if(L<2)return;
+  ctx.strokeStyle=color; ctx.lineWidth=w;
+  ctx.beginPath();ctx.moveTo(x1,y1);
+  ctx.lineTo(x2-Math.cos(a)*hs*.6,y2-Math.sin(a)*hs*.6);ctx.stroke();
+  ctx.fillStyle=color;
+  ctx.beginPath();ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-hs*Math.cos(a-.4),y2-hs*Math.sin(a-.4));
+  ctx.lineTo(x2-hs*Math.cos(a+.4),y2-hs*Math.sin(a+.4));
+  ctx.closePath();ctx.fill();
+}
+
+function drawVec(vx,vy,color,label,ox=0,oy_w=0,dashed=false){
+  const o=tc(ox,oy_w),t=tc(ox+vx,oy_w+vy);
+  const vxc=tc(ox+vx,oy_w),vyc=tc(ox,oy_w+vy);
+  ctx.strokeStyle=color+'35'; ctx.lineWidth=1; ctx.setLineDash([3,4]);
+  ctx.beginPath();ctx.moveTo(t.x,t.y);ctx.lineTo(vxc.x,vxc.y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(t.x,t.y);ctx.lineTo(vyc.x,vyc.y);ctx.stroke();
+  ctx.setLineDash([]);
+  if(dashed) ctx.setLineDash([6,4]);
+  arrow(o.x,o.y,t.x,t.y,color);
+  ctx.setLineDash([]);
+  // label — use simple Latin letters for canvas (avoids rendering issues with combining chars)
+  const mx=(o.x+t.x)/2,my=(o.y+t.y)/2;
+  const nx=-(t.y-o.y),ny=(t.x-o.x),nl=Math.sqrt(nx*nx+ny*ny)||1;
+  const lx=mx+(nx/nl)*15,ly=my+(ny/nl)*15;
+  ctx.fillStyle=color; ctx.font='bold 14px Outfit,sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(label,lx,ly);
+  // tip coords
+  const tipLabel=`(${(ox+vx).toFixed(1)},${(oy_w+vy).toFixed(1)})`;
+  ctx.font='9px Space Mono,monospace'; ctx.fillStyle=color+'cc';
+  ctx.textAlign=vx>=0?'left':'right'; ctx.textBaseline='alphabetic';
+  ctx.fillText(tipLabel,t.x+(vx>=0?7:-7),t.y+(vy>=0?-6:12));
+  ctx.textAlign='center';
+}
+
+function drawDef2d(C){drawVec(S.ax,S.ay,C.vA,'v');drawVec(S.bx,S.by,C.vB,'u');}
+
+function drawSuma(C){
+  drawVec(S.ax,S.ay,C.vA,'v');
+  drawVec(S.bx,S.by,C.vB,'u');
+  const rx=S.ax+S.bx,ry=S.ay+S.by;
+  drawVec(rx,ry,C.vR,'v+u');
+  const o=tc(0,0),a=tc(S.ax,S.ay),b=tc(S.bx,S.by),r=tc(rx,ry);
+  ctx.strokeStyle=C.vR+'30'; ctx.lineWidth=1; ctx.setLineDash([4,5]);
+  ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(r.x,r.y);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(r.x,r.y);ctx.stroke();
+  ctx.setLineDash([]);
+  updateBadgeR(`r=(${rx.toFixed(1)},${ry.toFixed(1)})`);
+}
+
+function drawMag(C){
+  drawVec(S.ax,S.ay,C.vA,'v');
+  const o=tc(0,0);
+  ctx.strokeStyle=C.muted+'40'; ctx.lineWidth=1; ctx.setLineDash([2,5]);
+  ctx.beginPath();ctx.arc(o.x,o.y,S.zoom,0,Math.PI*2);ctx.stroke();
+  ctx.setLineDash([]);
+  const n=nrm(S.ax,S.ay);
+  drawVec(n.x,n.y,C.accent5,'v^',0,0,true);
+}
+
+function drawDot(C){
+  drawVec(S.ax,S.ay,C.vA,'v');
+  drawVec(S.bx,S.by,C.vB,'u');
+  const mA=mag(S.ax,S.ay),mB=mag(S.bx,S.by);
+  if(mA>0.1&&mB>0.1){
+    const dp=dotP(S.ax,S.ay,S.bx,S.by);
+    const cosT=dp/((mA*mB)||1);
+    const theta=(Math.acos(Math.max(-1,Math.min(1,cosT)))*180/Math.PI).toFixed(1);
+    const aA=Math.atan2(S.ay,S.ax),aB=Math.atan2(S.by,S.bx);
+    const o=tc(0,0),r=Math.min(S.zoom*0.65,38);
+    ctx.strokeStyle=C.accent3; ctx.lineWidth=1.5;
+    const start=Math.min(aA,aB),end=Math.max(aA,aB);
+    ctx.beginPath();
+    if(end-start<=Math.PI) ctx.arc(o.x,o.y,r,-start,-end,true);
+    else ctx.arc(o.x,o.y,r,-start,-end,false);
+    ctx.stroke();
+    const midA=(aA+aB)/2;
+    const lp=tc(Math.cos(midA)*1.6,Math.sin(midA)*1.6);
+    ctx.fillStyle=C.accent3; ctx.font='bold 11px Space Mono,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(theta+'°',lp.x,lp.y);
+    ctx.textBaseline='alphabetic';
+  }
+}
+
+function drawCross(C){
+  drawVec(S.ax,S.ay,C.vA,'v');
+  drawVec(S.bx,S.by,C.vB,'u');
+  const o=tc(0,0),a=tc(S.ax,S.ay),b=tc(S.bx,S.by),r=tc(S.ax+S.bx,S.ay+S.by);
+  ctx.fillStyle=C.vR+'15';
+  ctx.beginPath();ctx.moveTo(o.x,o.y);ctx.lineTo(a.x,a.y);ctx.lineTo(r.x,r.y);ctx.lineTo(b.x,b.y);ctx.closePath();ctx.fill();
+  ctx.strokeStyle=C.vR+'40'; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(o.x,o.y);ctx.lineTo(a.x,a.y);ctx.lineTo(r.x,r.y);ctx.lineTo(b.x,b.y);ctx.closePath();ctx.stroke();
+  // area label in center
+  const cp=S.ax*S.by-S.ay*S.bx;
+  const cx2=(o.x+a.x+r.x+b.x)/4, cy2=(o.y+a.y+r.y+b.y)/4;
+  ctx.fillStyle=C.vR; ctx.font='10px Space Mono,monospace';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('A='+Math.abs(cp).toFixed(1),cx2,cy2);
+  ctx.textBaseline='alphabetic';
+}
+
+function drawProj(C){
+  drawVec(S.ax,S.ay,C.vA,'v');
+  drawVec(S.bx,S.by,C.vB,'u');
+  const dp=dotP(S.ax,S.ay,S.bx,S.by);
+  const mB2=(S.bx*S.bx+S.by*S.by)||1;
+  const pvx=(dp/mB2)*S.bx,pvy=(dp/mB2)*S.by;
+  drawVec(pvx,pvy,C.vR,'proj');
+  const ta=tc(S.ax,S.ay),tp=tc(pvx,pvy);
+  ctx.strokeStyle=C.accent5+'80'; ctx.lineWidth=1.5; ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(ta.x,ta.y);ctx.lineTo(tp.x,tp.y);ctx.stroke();
+  ctx.setLineDash([]);
+  updateBadgeR(`p=(${pvx.toFixed(1)},${pvy.toFixed(1)})`);
+}
+
+function drawAngle(C){
+  drawVec(S.ax,S.ay,C.vA,'v');
+  drawVec(S.bx,S.by,C.vB,'u');
+  const mA=mag(S.ax,S.ay),mB=mag(S.bx,S.by);
+  if(mA>0.1&&mB>0.1){
+    const aA=Math.atan2(S.ay,S.ax),aB=Math.atan2(S.by,S.bx);
+    const o=tc(0,0),r=Math.min(S.zoom*0.9,50);
+    const dp=dotP(S.ax,S.ay,S.bx,S.by);
+    const cosT=dp/((mA*mB)||1);
+    const theta=(Math.acos(Math.max(-1,Math.min(1,cosT)))*180/Math.PI).toFixed(1);
+    ctx.strokeStyle=C.accent3; ctx.lineWidth=2;
+    const start=Math.min(aA,aB),end=Math.max(aA,aB);
+    ctx.beginPath();
+    if(end-start<=Math.PI) ctx.arc(o.x,o.y,r,-start,-end,true);
+    else ctx.arc(o.x,o.y,r,-start,-end,false);
+    ctx.stroke();
+    const midA=(aA+aB)/2;
+    const lp=tc(Math.cos(midA)*2,Math.sin(midA)*2);
+    ctx.fillStyle=C.accent3; ctx.font='bold 12px Space Mono,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(theta+'°',lp.x,lp.y);
+    ctx.textBaseline='alphabetic';
+  }
+}
+
+function drawEndpoints(C){
+  [{vx:S.ax,vy:S.ay,c:C.vA},{vx:S.bx,vy:S.by,c:C.vB}].forEach(({vx,vy,c})=>{
+    const p=tc(vx,vy);
+    ctx.fillStyle=C.bg; ctx.beginPath();ctx.arc(p.x,p.y,7,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=c; ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.arc(p.x,p.y,7,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle=c+'60'; ctx.beginPath();ctx.arc(p.x,p.y,3.5,0,Math.PI*2);ctx.fill();
+  });
+  const o=tc(0,0);
+  ctx.fillStyle=C.muted; ctx.beginPath();ctx.arc(o.x,o.y,4,0,Math.PI*2);ctx.fill();
+}
+
+// ═══════════════════════════════════════════════════
+//  BUILD DOM
+// ═══════════════════════════════════════════════════
+function buildNav(){
+  document.getElementById('nav').innerHTML=MODULES.map((m,i)=>`
+    <button class="pill${i===0?' active':''}" data-i="${i}" onclick="switchMod(${i})">
+      <span class="ck">✓</span>${m.name}
+    </button>`).join('');
+}
+
+function buildSidebar(idx){
+  const m=MODULES[idx];
+  document.getElementById('sidebar').innerHTML=`
+    <div class="ss">
+      <div class="slabel">Modulo ${idx+1} &middot; Teoria</div>
+      <div class="ctitle">${m.title}</div>
+      <div class="hook">${m.hook}</div>
+    </div>
+    ${m.theory.map(t=>`<div class="ss"><div class="th"><h4>${t.h}</h4><p>${t.p}</p></div></div>`).join('')}
+    ${m.formulas.map((f,i)=>`<div class="ss"><div class="fbox">${f}<span class="sub">${m.formulasSub[i]}</span></div></div>`).join('')}
+  `;
+}
+
+function buildControls(idx){
+  const m=MODULES[idx];
+  document.getElementById('tc-ctrl').innerHTML=`
+    <div class="ps">
+      <div class="pst">Vector v</div>
+      <div class="vch"><div class="vcdot" style="background:var(--vA)"></div>
+        <span class="vcn" style="color:var(--vA)">v</span>
+        <span class="vcc" id="cA">(${S.ax.toFixed(1)}, ${S.ay.toFixed(1)})</span></div>
+      <div class="sr"><label>x</label><input type="range" id="ax" min="-8" max="8" step="0.5" value="${S.ax}" oninput="onSl()"><span class="sv" id="axv" style="color:var(--vA)">${S.ax.toFixed(1)}</span></div>
+      <div class="sr"><label>y</label><input type="range" id="ay" min="-8" max="8" step="0.5" value="${S.ay}" oninput="onSl()"><span class="sv" id="ayv" style="color:var(--vA)">${S.ay.toFixed(1)}</span></div>
+    </div>
+    <div class="ps">
+      <div class="pst">Vector u</div>
+      <div class="vch"><div class="vcdot" style="background:var(--vB)"></div>
+        <span class="vcn" style="color:var(--vB)">u</span>
+        <span class="vcc" id="cB">(${S.bx.toFixed(1)}, ${S.by.toFixed(1)})</span></div>
+      <div class="sr"><label>x</label><input type="range" id="bx" min="-8" max="8" step="0.5" value="${S.bx}" oninput="onSl()"><span class="sv" id="bxv" style="color:var(--vB)">${S.bx.toFixed(1)}</span></div>
+      <div class="sr"><label>y</label><input type="range" id="by" min="-8" max="8" step="0.5" value="${S.by}" oninput="onSl()"><span class="sv" id="byv" style="color:var(--vB)">${S.by.toFixed(1)}</span></div>
+    </div>
+    <div class="ps">
+      <div class="pst">Propiedades</div>
+      <div class="ig">
+        <div class="ic"><div class="icl">|v| magnitud</div><div class="icv" id="mA" style="color:var(--vA)">-</div></div>
+        <div class="ic"><div class="icl">|u| magnitud</div><div class="icv" id="mB" style="color:var(--vB)">-</div></div>
+        <div class="ic"><div class="icl">angulo v</div><div class="icv" id="angA" style="color:var(--vA)">-</div></div>
+        <div class="ic"><div class="icl">angulo u</div><div class="icv" id="angB" style="color:var(--vB)">-</div></div>
+        ${m.showScalar?`<div class="ic" style="grid-column:1/-1"><div class="icl">${m.scalarName}</div><div class="icv" id="scVal" style="color:var(--vR)">-</div></div>`:''}
+      </div>
+    </div>`;
+}
+
+function buildSteps(idx){
+  const steps=MODULES[idx].steps(S);
+  document.getElementById('tc-paso').innerHTML=`<div class="ps"><div class="pst">Analisis paso a paso</div>
+    ${steps.map((s,i)=>`<div class="sb" id="st${i}">
+      <div class="sbn">${s.n}</div>
+      <div class="sbt">${s.t}</div>
+      <div class="sbf" id="stf${i}">${s.f}</div>
+      ${s.r?`<div class="sbr" id="str${i}">${s.r}</div>`:''}
+    </div>`).join('')}
+  </div>`;
+}
+
+function buildExercises(idx){
+  const m=MODULES[idx];
+  const done=S.exDone[idx], score=S.exScore[idx];
+  let html=`<div class="ps"><div class="pst">Ejercicios — Modulo ${idx+1}</div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted)"><span>Progreso</span><span id="prtxt">${score}/3</span></div>
+    <div class="pbr"><div class="pf" id="prf" style="width:${score/3*100}%"></div></div>
+    <div style="height:8px"></div>`;
+  m.exercises.forEach((ex,i)=>{
+    const d=done[i];
+    html+=`<div class="ec${d?' ok':''}" id="ec${i}">
+      <div class="en">EJERCICIO 0${i+1}</div>
+      <div class="eq">${ex.q}</div>`;
+    if(ex.num){
+      html+=`<div class="nir">
+        <input type="number" class="ni" id="ni${i}" placeholder="..." step="0.01" ${d?'disabled':''}>
+        <button class="btn pri" onclick="chkNum(${i})" ${d?'disabled':''}>OK</button>
+      </div>`;
+    } else {
+      html+=`<div class="echs">${ex.opts.map(o=>`
+        <button class="cb" onclick="chkOpt(${i},'${o[0]}')" ${d?'disabled':''}>${o}</button>`).join('')}</div>`;
+    }
+    html+=`<div class="ef${d?' show ok':''}" id="ef${i}">${d?(ex.num?ex.fb:(ex.fb[ex.ans]||'')):''}
+    </div></div>`;
+  });
+  html+='</div>';
+  document.getElementById('tc-ej').innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════
+//  LIVE UPDATE
+// ═══════════════════════════════════════════════════
+function updateLive(){
+  const m=MODULES[S.mod];
+  const mA_=mag(S.ax,S.ay),mB_=mag(S.bx,S.by);
+  const aA=ang(S.ax,S.ay),aB=ang(S.bx,S.by);
+  const dp=dotP(S.ax,S.ay,S.bx,S.by);
+  const cp=S.ax*S.by-S.ay*S.bx;
+  const mB2=(S.bx*S.bx+S.by*S.by)||1;
+  const ps=dp/(mB_||1);
+  const cosT=dp/((mA_*mB_)||1);
+  const theta=(Math.acos(Math.max(-1,Math.min(1,cosT)))*180/Math.PI);
+
+  ['ax','ay','bx','by'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=S[id];});
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  set('axv',S.ax.toFixed(1)); set('ayv',S.ay.toFixed(1));
+  set('bxv',S.bx.toFixed(1)); set('byv',S.by.toFixed(1));
+  set('cA',`(${S.ax.toFixed(1)}, ${S.ay.toFixed(1)})`);
+  set('cB',`(${S.bx.toFixed(1)}, ${S.by.toFixed(1)})`);
+  set('mA',mA_.toFixed(2)); set('mB',mB_.toFixed(2));
+  set('angA',aA.toFixed(1)+'°'); set('angB',aB.toFixed(1)+'°');
+  if(m.showScalar){
+    let sv;
+    if(m.drawFn==='dot') sv=dp.toFixed(3);
+    else if(m.drawFn==='cross') sv=cp.toFixed(3);
+    else if(m.drawFn==='proj') sv=ps.toFixed(3);
+    else if(m.drawFn==='angle') sv=theta.toFixed(2)+'°';
+    set('scVal',sv);
+  }
+  document.getElementById('badgeA').textContent=`v=(${S.ax.toFixed(1)},${S.ay.toFixed(1)})`;
+  document.getElementById('badgeB').textContent=`u=(${S.bx.toFixed(1)},${S.by.toFixed(1)})`;
+  // update steps live
+  const steps=m.steps(S);
+  steps.forEach((s,i)=>{
+    const ef=document.getElementById(`stf${i}`);if(ef)ef.textContent=s.f;
+    const er=document.getElementById(`str${i}`);if(er&&s.r)er.textContent=s.r;
+  });
+}
+
+function updateBadgeR(txt){
+  document.getElementById('badgeR').style.display='flex';
+  document.getElementById('badgeRt').textContent=txt;
+}
+
+function onSl(){
+  S.ax=parseFloat(document.getElementById('ax').value);
+  S.ay=parseFloat(document.getElementById('ay').value);
+  S.bx=parseFloat(document.getElementById('bx').value);
+  S.by=parseFloat(document.getElementById('by').value);
+  updateLive(); draw();
+}
+
+// ═══════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════
+function switchMod(i){
+  S.mod=i; S.visited.add(i);
+  document.querySelectorAll('.pill').forEach((p,j)=>{
+    p.classList.toggle('active',j===i);
+    if(S.visited.has(j)) p.classList.add('done');
+  });
+  const showR=(MODULES[i].drawFn==='suma'||MODULES[i].drawFn==='proj');
+  document.getElementById('badgeR').style.display=showR?'flex':'none';
+  buildSidebar(i); buildControls(i); buildSteps(i); buildExercises(i);
+  updateLive(); draw();
+}
+
+function swTab(t){
+  S.tab=t;
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['ctrl','paso','ej'][i]===t));
+  ['ctrl','paso','ej'].forEach(id=>document.getElementById(`tc-${id}`).classList.toggle('active',id===t));
+}
+
+// ═══════════════════════════════════════════════════
+//  EXERCISES
+// ═══════════════════════════════════════════════════
+function chkOpt(i,chosen){
+  const m=MODULES[S.mod]; const ex=m.exercises[i];
+  if(S.exDone[S.mod][i])return;
+  const card=document.getElementById(`ec${i}`);
+  const fb=document.getElementById(`ef${i}`);
+  const btns=card.querySelectorAll('.cb');
+  btns.forEach(b=>b.disabled=true);
+  btns.forEach(b=>{
+    if(b.textContent.trim().startsWith(ex.ans+')')) b.classList.add('ok');
+    if(b.textContent.trim().startsWith(chosen+')') && chosen!==ex.ans) b.classList.add('err');
+  });
+  const ok=(chosen===ex.ans);
+  fb.textContent=ex.fb[chosen]||'';
+  fb.className=`ef show ${ok?'ok':'err'}`;
+  if(ok){card.classList.add('ok');markDone(i);}
+  else card.classList.add('err');
+}
+
+function chkNum(i){
+  const m=MODULES[S.mod]; const ex=m.exercises[i];
+  if(S.exDone[S.mod][i])return;
+  const v=parseFloat(document.getElementById(`ni${i}`).value);
+  const fb=document.getElementById(`ef${i}`);
+  const card=document.getElementById(`ec${i}`);
+  if(isNaN(v)){fb.textContent='Ingresa un numero valido.';fb.className='ef show err';return;}
+  const ok=Math.abs(v-ex.ans)<=ex.tol;
+  fb.textContent=ok?ex.fb:ex.fbErr;
+  fb.className=`ef show ${ok?'ok':'err'}`;
+  if(ok){card.classList.add('ok');document.getElementById(`ni${i}`).disabled=true;markDone(i);}
+  else card.classList.add('err');
+}
+
+function markDone(i){
+  const idx=S.mod;
+  S.exDone[idx][i]=true;
+  S.exScore[idx]=S.exDone[idx].filter(Boolean).length;
+  const pct=S.exScore[idx]/3*100;
+  const pf=document.getElementById('prf');if(pf)pf.style.width=pct+'%';
+  const pt=document.getElementById('prtxt');if(pt)pt.textContent=`${S.exScore[idx]}/3`;
+  if(S.exScore[idx]===3){
+    S.visited.add(idx);
+    document.querySelector(`[data-i="${idx}"]`).classList.add('done');
+  }
+}
+
+// ═══════════════════════════════════════════════════
+//  DRAG
+// ═══════════════════════════════════════════════════
+function vecDist(vx,vy,cx,cy){const p=tc(vx,vy);return Math.sqrt((p.x-cx)**2+(p.y-cy)**2);}
+
+cv.addEventListener('mousedown',e=>{
+  const r=cv.getBoundingClientRect(),cx=e.clientX-r.left,cy=e.clientY-r.top;
+  if(vecDist(S.ax,S.ay,cx,cy)<14)S.drag='A';
+  else if(vecDist(S.bx,S.by,cx,cy)<14)S.drag='B';
+});
+cv.addEventListener('mousemove',e=>{
+  const r=cv.getBoundingClientRect(),cx=e.clientX-r.left,cy=e.clientY-r.top;
+  if(S.drag){
+    const w=tw(cx,cy),sn={x:Math.round(w.x*2)/2,y:Math.round(w.y*2)/2};
+    if(S.drag==='A'){S.ax=sn.x;S.ay=sn.y;}else{S.bx=sn.x;S.by=sn.y;}
+    updateLive();draw();return;
+  }
+  cv.style.cursor=(vecDist(S.ax,S.ay,cx,cy)<14||vecDist(S.bx,S.by,cx,cy)<14)?'grab':'crosshair';
+});
+cv.addEventListener('mouseup',()=>S.drag=null);
+cv.addEventListener('mouseleave',()=>S.drag=null);
+cv.addEventListener('wheel',e=>{
+  e.preventDefault();
+  S.zoom=Math.max(20,Math.min(120,S.zoom*(e.deltaY<0?1.1:0.9)));
+  draw();
+},{passive:false});
+cv.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  const t=e.touches[0],r=cv.getBoundingClientRect(),cx=t.clientX-r.left,cy=t.clientY-r.top;
+  if(vecDist(S.ax,S.ay,cx,cy)<20)S.drag='A';
+  else if(vecDist(S.bx,S.by,cx,cy)<20)S.drag='B';
+},{passive:false});
+cv.addEventListener('touchmove',e=>{
+  e.preventDefault();if(!S.drag)return;
+  const t=e.touches[0],r=cv.getBoundingClientRect(),cx=t.clientX-r.left,cy=t.clientY-r.top;
+  const w=tw(cx,cy),sn={x:Math.round(w.x*2)/2,y:Math.round(w.y*2)/2};
+  if(S.drag==='A'){S.ax=sn.x;S.ay=sn.y;}else{S.bx=sn.x;S.by=sn.y;}
+  updateLive();draw();
+},{passive:false});
+cv.addEventListener('touchend',()=>S.drag=null);
+
+// ═══════════════════════════════════════════════════
+//  CONTROLS
+// ═══════════════════════════════════════════════════
+function resetV(){S.ax=3;S.ay=2;S.bx=-2;S.by=3;S.zoom=40;updateLive();draw();}
+function toggleGrid(){S.grid=!S.grid;draw();}
+function toggleMode(){
+  const sw=document.getElementById('msw');sw.classList.toggle('on');
+  S.mode=sw.classList.contains('on')?'professor':'student';
+  document.getElementById('ml0').style.color=S.mode==='student'?'var(--accent4)':'var(--muted)';
+  document.getElementById('ml1').style.color=S.mode==='professor'?'var(--accent3)':'var(--muted)';
+  document.getElementById('hint').textContent=S.mode==='professor'
+    ?'Modo Profesor: arrastra vectores o usa sliders para presentar conceptos en clase'
+    :'Arrastra los extremos de los vectores · Rueda del raton = zoom';
+}
+
+function doAnimate(){
+  if(S.animating)return;
+  S.animating=true;
+  const btn=document.getElementById('abtn');btn.textContent='⏸ …';
+  const targets=[{ax:5,ay:0,bx:0,by:4},{ax:3,ay:4,bx:-3,by:2},{ax:-2,ay:3,bx:2,by:-3},{ax:3,ay:2,bx:-2,by:3}];
+  let step=0,t=0;
+  const from={ax:S.ax,ay:S.ay,bx:S.bx,by:S.by};
+  const frames=()=>{
+    if(step>=targets.length){S.animating=false;btn.textContent='▶ Animar';draw();return;}
+    const to=targets[step],prev=step===0?from:targets[step-1];
+    t+=0.022;
+    if(t>=1){t=0;step++;}
+    const e=t<.5?2*t*t:-1+(4-2*t)*t;
+    S.ax=prev.ax+(to.ax-prev.ax)*e; S.ay=prev.ay+(to.ay-prev.ay)*e;
+    S.bx=prev.bx+(to.bx-prev.bx)*e; S.by=prev.by+(to.by-prev.by)*e;
+    updateLive();draw();requestAnimationFrame(frames);
+  };
+  requestAnimationFrame(frames);
+}
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+buildNav();
+buildSidebar(0); buildControls(0); buildSteps(0); buildExercises(0);
+resize();
+updateLive();
+</script>
+</body>
+</html>
